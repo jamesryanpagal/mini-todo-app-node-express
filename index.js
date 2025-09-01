@@ -17,12 +17,29 @@ router.get("/tasks", (req, res) => {
   res.status(200).json(tasks);
 });
 
-router.post("/tasks/add", (req, res) => {
-  const { title, description } = req.body || {};
-  const id = tasks.at(-1)?.id + 1 || 1;
-  tasks.push({ id, title, description });
-  res.status(201).json("Task successfully added.");
-});
+router.post(
+  "/tasks/add",
+  (req, res, next) => {
+    const { title } = req.body || {};
+
+    const checkExistingTask = tasks?.find(
+      task => task?.title?.toLowerCase() === title.toLowerCase(),
+    );
+
+    if (!!checkExistingTask) {
+      res.status(400).json("Task with the same title already exists.");
+      return;
+    }
+
+    next();
+  },
+  (req, res) => {
+    const { title, description } = req.body || {};
+    const id = tasks.at(-1)?.id + 1 || 1;
+    tasks.push({ id, title, description });
+    res.status(201).json("Task successfully added.");
+  },
+);
 
 router.delete("/tasks/delete/:id", (req, res) => {
   const { id } = req.params || {};
