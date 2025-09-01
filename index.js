@@ -14,7 +14,7 @@ let tasks = [];
 const router = express.Router();
 
 router.get("/tasks", (req, res) => {
-  res.json(tasks);
+  res.status(200).json(tasks);
 });
 
 router.post("/tasks/add", (req, res) => {
